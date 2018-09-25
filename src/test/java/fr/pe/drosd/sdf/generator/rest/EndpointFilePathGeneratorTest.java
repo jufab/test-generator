@@ -1,8 +1,10 @@
 package fr.pe.drosd.sdf.generator.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import fr.pe.drosd.sdf.generator.builder.EndpointFilePathGenerator;
 
 public class EndpointFilePathGeneratorTest {
 
@@ -16,7 +18,8 @@ public class EndpointFilePathGeneratorTest {
 
     @Test
     public void shouldStripNonAlphaNumericFromGroupAndArtifact() {
-        EndpointFilePathGenerator endpointFilePathGenerator = new EndpointFilePathGenerator("com.my-test", "example-app");
+        EndpointFilePathGenerator endpointFilePathGenerator = new EndpointFilePathGenerator("com.my-test",
+                "example-app");
 
         assertEquals("/src/main/java/com/mytest/exampleapp/rest/HelloWorldEndpoint.java",
                 endpointFilePathGenerator.getEndpointFilePath());
@@ -26,16 +29,15 @@ public class EndpointFilePathGeneratorTest {
     public void shouldGenerateEndpointPackageForValidGroupAndArtifact() {
         EndpointFilePathGenerator endpointFilePathGenerator = new EndpointFilePathGenerator("com.test", "example");
 
-        assertEquals("com.test.example.rest",
-                endpointFilePathGenerator.getEndpointPackage());
+        assertEquals("com.test.example.rest", endpointFilePathGenerator.getEndpointPackage());
     }
 
     @Test
     public void shouldStripNonAlphaNumericFromEndpointPackage() {
-        EndpointFilePathGenerator endpointFilePathGenerator = new EndpointFilePathGenerator("com.my-test", "example-app");
+        EndpointFilePathGenerator endpointFilePathGenerator = new EndpointFilePathGenerator("com.my-test",
+                "example-app");
 
-        assertEquals("com.mytest.exampleapp.rest",
-                endpointFilePathGenerator.getEndpointPackage());
+        assertEquals("com.mytest.exampleapp.rest", endpointFilePathGenerator.getEndpointPackage());
     }
 
     @Test

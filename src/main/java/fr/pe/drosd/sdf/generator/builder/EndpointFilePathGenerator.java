@@ -1,14 +1,15 @@
-package fr.pe.drosd.sdf.generator.rest;
+package fr.pe.drosd.sdf.generator.builder;
 
 /**
  * Generates the file path and package of a sample JAXRS service based upon the
  * Maven groupId and artifactId.
  *
- * The JAXRS service is created at groupid.artifactId.rest.HelloWorldEndpoint.java
+ * The JAXRS service is created at
+ * groupid.artifactId.rest.HelloWorldEndpoint.java
  *
  * Non alpha-numeric characters are stripped from the generated package name
  */
-class EndpointFilePathGenerator {
+public class EndpointFilePathGenerator {
 
     private static final String SRC_PATH = "/src/main/java";
     private static final String REST_CLASS = "/rest/HelloWorldEndpoint.java";
@@ -19,38 +20,28 @@ class EndpointFilePathGenerator {
     private final String applicationFilePath;
     private final String endpointPackage;
 
-    EndpointFilePathGenerator(String groupId, String artifactId) {
+    public EndpointFilePathGenerator(String groupId, String artifactId) {
 
         groupId = groupId.replaceAll("[^A-Za-z0-9.]", "");
         artifactId = artifactId.replaceAll("[^A-Za-z0-9]", "");
 
-        endpointFilePath = String.format("%s/%s/%s%s",
-                SRC_PATH,
-                groupId.replace(".", "/"),
-                artifactId,
-                REST_CLASS);
+        endpointFilePath = String.format("%s/%s/%s%s", SRC_PATH, groupId.replace(".", "/"), artifactId, REST_CLASS);
 
-        applicationFilePath = String.format("%s/%s/%s%s",
-                SRC_PATH,
-                groupId.replace(".", "/"),
-                artifactId,
+        applicationFilePath = String.format("%s/%s/%s%s", SRC_PATH, groupId.replace(".", "/"), artifactId,
                 APPLICATION_CLASS);
 
-        endpointPackage = String.format("%s.%s.%s",
-                groupId,
-                artifactId,
-                REST_PACKAGE);
+        endpointPackage = String.format("%s.%s.%s", groupId, artifactId, REST_PACKAGE);
     }
 
-    String getEndpointFilePath() {
+    public String getEndpointFilePath() {
         return endpointFilePath;
     }
 
-    String getEndpointPackage() {
+    public String getEndpointPackage() {
         return endpointPackage;
     }
 
-    String getApplicationPath() {
+    public String getApplicationPath() {
         return applicationFilePath;
     }
 }

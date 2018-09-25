@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "generator",
+                "projectName": "generator",
+                "workingDirectory": "/home/julien/Documents/git/pe-project-generator",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "generator",
+                "projectName": "generator",
+                "workingDirectory": "/home/julien/Documents/git/pe-project-generator",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}

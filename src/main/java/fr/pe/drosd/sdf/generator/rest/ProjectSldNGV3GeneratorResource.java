@@ -22,14 +22,18 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import fr.pe.drosd.sdf.generator.builder.EndpointFilePathGenerator;
+
 @ApplicationScoped
-@Path("/generator")
-public class ProjectGeneratorResource {
+@Path("/generator/sldngv3")
+public class ProjectSldNGV3GeneratorResource {
     private static final String THORNTAIL_VERSION = "2.2.0.Final";
+    private static final String SLDNG_V3_VERSION = "3.4.b20180518.123";
+    private static final String EMPLACEMENT = "templates/sldngv3/";
 
     TemplateEngine engine;
 
-    public ProjectGeneratorResource() {
+    public ProjectSldNGV3GeneratorResource() {
         engine = new TemplateEngine();
 
         ClassLoaderTemplateResolver textTemplateResolver = new ClassLoaderTemplateResolver(getClass().getClassLoader());
@@ -47,12 +51,11 @@ public class ProjectGeneratorResource {
 
     @GET
     @Produces("application/zip")
-    public Response generate(
-            @QueryParam("sv") @DefaultValue(THORNTAIL_VERSION) String thorntailVersion,
-            @QueryParam("g") @DefaultValue("com.example") @NotNull(message = "Parameter 'g' (Group Id) must not be null") String groupId,
-            @QueryParam("a") @DefaultValue("demo") @NotNull(message = "Parameter 'a' (Artifact Id) must not be null") String artifactId,
-            @QueryParam("d") List<String> dependencies)
-            throws Exception {
+    public Response generate(@QueryParam("sv") @DefaultValue(THORNTAIL_VERSION) String thorntailVersion,
+            @QueryParam("ng") @DefaultValue(SLDNG_V3_VERSION) String sldNGV3Version,
+            @QueryParam("g") @DefaultValue("fr.pe.blocpos") @NotNull(message = "Parameter 'g' (Group Id) must not be null") String groupId,
+            @QueryParam("a") @DefaultValue("code-composant-libelle-court") @NotNull(message = "Parameter 'a' (Artifact Id) must not be null") String artifactId,
+            @QueryParam("d") List<String> dependencies) throws Exception {
         // Remove empty values
         dependencies.remove("");
         Context context = new Context();
@@ -60,31 +63,29 @@ public class ProjectGeneratorResource {
         context.setVariable("artifactId", artifactId);
         context.setVariable("dependencies", dependencies);
         context.setVariable("thorntailVersion", thorntailVersion);
+        context.setVariable("sldNGV3Version", sldNGV3Version);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
             zos.putNextEntry(new ZipEntry(artifactId + "/src/main/java/"));
             zos.closeEntry();
 
             zos.putNextEntry(new ZipEntry(artifactId + "/pom.xml"));
-            zos.write(engine.process("templates/pom.tl.xml", context).getBytes());
+            zos.write(engine.process(EMPLACEMENT + "pom.tl.xml", context).getBytes());
             zos.closeEntry();
 
             if (enableJAXRS(dependencies)) {
                 EndpointFilePathGenerator fpg = new EndpointFilePathGenerator(groupId, artifactId);
                 context.setVariable("endpointPackage", fpg.getEndpointPackage());
                 zos.putNextEntry(new ZipEntry(artifactId + fpg.getEndpointFilePath()));
-                zos.write(engine.process("templates/HelloWorldEndpoint.tl.java", context).getBytes());
+                zos.write(engine.process(EMPLACEMENT + "HelloWorldEndpoint.tl.java", context).getBytes());
                 zos.putNextEntry(new ZipEntry(artifactId + fpg.getApplicationPath()));
-                zos.write(engine.process("templates/RestApplication.tl.java", context).getBytes());
+                zos.write(engine.process(EMPLACEMENT + "RestApplication.tl.java", context).getBytes());
                 zos.closeEntry();
             }
         }
 
-        return Response
-                .ok(baos.toByteArray())
-                .type("application/zip")
-                .header("Content-Disposition", "attachment; filename=\"" + artifactId + ".zip\"")
-                .build();
+        return Response.ok(baos.toByteArray()).type("application/zip")
+                .header("Content-Disposition", "attachment; filename=\"" + artifactId + ".zip\"").build();
     }
 
     private boolean enableJAXRS(List<String> dependencies) {
